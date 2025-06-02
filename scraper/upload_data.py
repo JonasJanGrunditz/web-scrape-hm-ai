@@ -1,9 +1,14 @@
 import io
+import os
 import requests
+from dotenv import load_dotenv
 from openai import OpenAI
 from gcp.gcp_bucket import download_processed_garments_from_gcs
 
-client = OpenAI(api_key="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")        # assumes OPENAI_API_KEY is set
+# Load environment variables
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))        # assumes OPENAI_API_KEY is set
                           # or client = OpenAI(api_key="sk-…")
 
 def create_file(client, data, *, filename="data.txt"):

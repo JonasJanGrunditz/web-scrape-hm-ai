@@ -1,4 +1,9 @@
+import os
+from dotenv import load_dotenv
 from groq import Groq
+
+# Load environment variables
+load_dotenv()
 
 def extract_sections_from_markdown(markdown_content: str) -> str:
     """
@@ -11,7 +16,7 @@ def extract_sections_from_markdown(markdown_content: str) -> str:
         str: The extracted text as returned by the Groq API.
     """
     client = Groq(
-        api_key="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",
+        api_key=os.getenv("GROQ_API_KEY"),
     )
     
     chat_completion = client.chat.completions.create(

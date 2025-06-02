@@ -1,5 +1,7 @@
 import time
 import asyncio
+import os
+from dotenv import load_dotenv
 from crawl4ai import AsyncWebCrawler
 from crawl4ai.async_configs import BrowserConfig, CrawlerRunConfig
 import re
@@ -8,7 +10,11 @@ from llm.openai import extract_sections_from_markdown_openai
 from gcp.gcp_bucket import download_urls_from_gcs, upload_urls_to_gcs
 from llm.openai import extract_sections_from_markdown_openai
 from openai import OpenAI
-client = OpenAI(api_key="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")        # assumes OPENAI_API_KEY is set
+
+# Load environment variables
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 
@@ -119,7 +125,7 @@ async def process_batch(urls, browser_config, run_config, client, batch_num):
 async def main():
     start_time = time.perf_counter()
     
-    client = OpenAI(api_key="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")
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     garment_urls = download_urls_from_gcs()
     browser_config = BrowserConfig()  # Default browser configuration
     run_config = CrawlerRunConfig()     # Default crawl run configuration
