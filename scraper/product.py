@@ -127,7 +127,7 @@ async def main():
     start_time = time.perf_counter()
     
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    garment_urls = download_urls_from_gcs()[:50]
+    garment_urls = download_urls_from_gcs()[:500]
     browser_config = BrowserConfig()  # Default browser configuration
     run_config = CrawlerRunConfig()     # Default crawl run configuration
 
