@@ -20,11 +20,11 @@ response = client.responses.parse(
     Please give suggestions to the customer by looking in the file_search what garments that match the description 
     Output only article ids
     
-    The customer is looking for a pair of klänningar""",
+    The customer is looking for a pair of skor""",
     tools=[{
         "type": "file_search",
-        "vector_store_ids": ["vs_683da4cb755c819187853dee0e775957"],
-        "max_num_results": 5
+        "vector_store_ids": ["vs_683dd4ffe024819185b78f3aef3fe53c"],
+        "max_num_results": 10
     }],
     text_format=RecommendedArticles,
 )

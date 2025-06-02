@@ -54,20 +54,20 @@ garment_data = download_processed_garments_from_gcs()
 print(garment_data)
 
 
-# file_id  = create_file(client, garment_data, filename="my_corpus.txt")
+file_id  = create_file(client, garment_data, filename="my_corpus_test.txt")
 
 
-# vector_store = client.vector_stores.create(
-#     name="knowledge_base"
-# )
-# print(vector_store.id)
+vector_store = client.vector_stores.create(
+    name="knowledge_base_test_2"
+)
+print(vector_store.id)
 
 
-# client.vector_stores.files.create(
-#     vector_store_id=vector_store.id,
-#     file_id=file_id
-# )
-# result = client.vector_stores.files.list(
-#     vector_store_id=vector_store.id
-# )
-# print(result)
+client.vector_stores.files.create(
+    vector_store_id=vector_store.id,
+    file_id=file_id
+)
+result = client.vector_stores.files.list(
+    vector_store_id=vector_store.id
+)
+print(result)

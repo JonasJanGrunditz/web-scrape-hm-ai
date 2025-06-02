@@ -83,6 +83,7 @@ async def crawl_url(url, browser_config, run_config, client, max_retries=3):
                         print(f"Warning: No content extracted from {url} - pattern not found")
                        # print(result.markdown)
                     else:
+                     
                         extracted_content_cleaned = extract_sections_from_markdown_openai(extracted_content, client)
                     return extracted_content_cleaned
                     
@@ -126,7 +127,7 @@ async def main():
     start_time = time.perf_counter()
     
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    garment_urls = download_urls_from_gcs()
+    garment_urls = download_urls_from_gcs()[:50]
     browser_config = BrowserConfig()  # Default browser configuration
     run_config = CrawlerRunConfig()     # Default crawl run configuration
 

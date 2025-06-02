@@ -5,6 +5,9 @@ class ArticleSummary(BaseModel):
     sizes_and_availability: str
     beskrivning_och_passform: str
     material: str
+    category: str
+    color: str
+    attributes: list[str]
 
 def extract_sections_from_markdown_openai(markdown_content: str, client) -> str:
     """
@@ -29,6 +32,8 @@ def extract_sections_from_markdown_openai(markdown_content: str, client) -> str:
                 'beskrivning_och_passform': 'Text',
                 'material': 'Text',
                 'category': 'the catefory of the garment, e.g. "klänningar"'
+                'color': 'the color of the garment, e.g. "svart" . Often exist below Beskrivning'
+                'attributes': ['list', 'of', 'attributes', 'e.g. "kortärmad", "långärmad", "v-ringad", "mönstrad"', Passform, Midjehöjd, Längd,Krage, Halsringning, Ärmstil, Ärmlängd and more...]
                 
             
                 Please extract the above sections from the markdown content:
@@ -43,4 +48,7 @@ def extract_sections_from_markdown_openai(markdown_content: str, client) -> str:
     Sizes & Availability: {response.output_parsed.sizes_and_availability}
     Description & Fit: {response.output_parsed.beskrivning_och_passform}
     Material: {response.output_parsed.material}
+    Category: {response.output_parsed.category}
+    Color: {response.output_parsed.color}
+    Attributes: {response.output_parsed.attributes}
     """
