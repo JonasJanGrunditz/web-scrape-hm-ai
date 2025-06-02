@@ -28,6 +28,7 @@ def extract_sections_from_markdown_openai(markdown_content: str, client) -> str:
                 'sizes_and_availability': 'Text',
                 'beskrivning_och_passform': 'Text',
                 'material': 'Text',
+                'category': 'the catefory of the garment, e.g. "klänningar"'
                 
             
                 Please extract the above sections from the markdown content:
