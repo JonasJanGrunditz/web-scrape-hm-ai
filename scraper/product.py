@@ -19,6 +19,26 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 import html
+def extract_urls_from_markdown(text: str) -> list[str]:
+    """
+    Extract all URLs from markdown image syntax like:
+    [![Alt text](https://example.com/image.jpg)](https://example.com/page.html)
+    Returns a list of all found URLs.
+    """
+    pattern = r'\[!\[.*?\]\((https?://[^\)]+)\)\]'
+    url = re.findall(pattern, text)[0]
+    url = url.split("?")[0]
+    return url
+
+def extract_product_id(text: str) -> str | None:
+    """
+    Extract product ID from H&M URLs like:
+    https://www2.hm.com/sv_se/productpage.1259175004.html
+    Returns the numeric product ID (e.g., '1259175004')
+    """
+    pattern = r'productpage\.(\d+)\.html'
+    match = re.search(pattern, text)
+    return match.group(1) if match else None
 
 def between_size_and_material(text: str) -> str | None:
     """
@@ -79,12 +99,16 @@ async def crawl_url(url, browser_config, run_config, client, max_retries=3):
                 if result.success:
                     print(f"Successfully crawled {url} on attempt {attempt + 1}")
                     extracted_content = between_size_and_material(result.markdown)
+                    
                     if extracted_content is None:
                         print(f"Warning: No content extracted from {url} - pattern not found")
                        # print(result.markdown)
                     else:
-                     
-                        extracted_content_cleaned = extract_sections_from_markdown_openai(extracted_content, client)
+                        article_id = extract_product_id(url)
+                        print(f"Extracted article ID: {article_id} from {url}")
+
+                        #url_image = extract_urls_from_markdown(result.markdown)
+                        extracted_content_cleaned = extract_sections_from_markdown_openai(extracted_content,article_id, client)
                     return extracted_content_cleaned
                     
                 else:
@@ -127,7 +151,7 @@ async def main():
     start_time = time.perf_counter()
     
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    garment_urls = download_urls_from_gcs()[:500]
+    garment_urls = download_urls_from_gcs()[2:5]
     browser_config = BrowserConfig()  # Default browser configuration
     run_config = CrawlerRunConfig()     # Default crawl run configuration
 

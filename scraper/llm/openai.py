@@ -1,7 +1,6 @@
 from openai import OpenAI
 from pydantic import BaseModel
 class ArticleSummary(BaseModel):
-    article_id: int
     sizes_and_availability: str
     beskrivning_och_passform: str
     material: str
@@ -9,7 +8,7 @@ class ArticleSummary(BaseModel):
     color: str
     attributes: list[str]
 
-def extract_sections_from_markdown_openai(markdown_content: str, client) -> str:
+def extract_sections_from_markdown_openai(markdown_content: str, article_id: str, client) -> str:
     """
     Extracts text under the 'Beskrivning och passform' and "MATERIAL" sections from the provided markdown content.
     
@@ -27,7 +26,6 @@ def extract_sections_from_markdown_openai(markdown_content: str, client) -> str:
     input=f""" Structure and clean the text so it is easy for the GenAI Agent to search for the data in a vector database
                 
                 Output structure:
-                'article_id': 'Is digits, usually coming after Art.nr: 1259098002'
                 'sizes_and_availability': 'Text',
                 'beskrivning_och_passform': 'Text',
                 'material': 'Text',
@@ -44,7 +42,7 @@ def extract_sections_from_markdown_openai(markdown_content: str, client) -> str:
     
     
     
-    return f"""Article ID: {response.output_parsed.article_id}
+    return f"""Article ID: {article_id}
     Sizes & Availability: {response.output_parsed.sizes_and_availability}
     Description & Fit: {response.output_parsed.beskrivning_och_passform}
     Material: {response.output_parsed.material}
