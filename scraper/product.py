@@ -153,12 +153,12 @@ async def main():
     print(f"Successfully processed {len(valid_content)} out of {len(garment_urls)} URLs")
     print(f"Failed to extract content from {failed_count} URLs")
 
-    upload_urls_to_gcs(
-        valid_content,
-        bucket_name="web-scrape-ai",
-        destination_blob_name="garments-info/products-info.txt",
-        project_id="voii-459718"
-    )
+    # upload_urls_to_gcs(
+    #     valid_content,
+    #     bucket_name="web-scrape-ai",
+    #     destination_blob_name="garments-info/products-info.txt",
+    #     project_id="voii-459718"
+    # )
 
     elapsed = time.perf_counter() - start_time
     print(f"Execution time: {elapsed:.2f} seconds")
