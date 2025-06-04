@@ -7,8 +7,9 @@ from crawl4ai.async_configs import BrowserConfig, CrawlerRunConfig
 import re
 from groq import Groq
 from llm.openai import extract_sections_from_markdown_openai
-from gcp.gcp_bucket import download_urls_from_gcs, upload_urls_to_gcs
+from gcp.gcp_bucket import download_urls_from_gcs, upload_urls_to_gcs, upload_image_mapping_to_gcs
 from llm.openai import extract_sections_from_markdown_openai
+from transformation.hardcoded_re import extract_product_id, extract_urls_from_markdown, between_size_and_material
 from openai import OpenAI
 
 # Load environment variables
@@ -17,76 +18,8 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
+image_mapping = {}
 
-import html
-def extract_urls_from_markdown(text: str) -> list[str]:
-    """
-    Extract all URLs from markdown image syntax like:
-    [![Alt text](https://example.com/image.jpg)](https://example.com/page.html)
-    Returns a list of all found URLs.
-    """
-    pattern = r'\[!\[.*?\]\((https?://[^\)]+)\)\]'
-    url = re.findall(pattern, text)[0]
-    url = url.split("?")[0]
-    return url
-
-def extract_product_id(text: str) -> str | None:
-    """
-    Extract product ID from H&M URLs like:
-    https://www2.hm.com/sv_se/productpage.1259175004.html
-    Returns the numeric product ID (e.g., '1259175004')
-    """
-    pattern = r'productpage\.(\d+)\.html'
-    match = re.search(pattern, text)
-    return match.group(1) if match else None
-
-def between_size_and_material(text: str) -> str | None:
-    """
-    returns everything that sits between the headings
-    "Välj storlek"  …  "Ytterligare materialinformation"
-    """
-
-    # 1) normalise the text for pattern matching --------------------------
-    txt_normalized = html.unescape(text)          # turns &nbsp; → '\xa0' etc.
-    txt_normalized = txt_normalized.replace('\xa0', ' ')     # non-breaking space → space
-    txt_normalized = txt_normalized.lower()                  # ignore case completely
-
-    # 2) regex: be generous with white-space inside the headings ------------
-    pattern = (
-        r"välj\s+storlek"               # start
-        r"\s*(.*?)\s*"                  # everything in between
-        r"(?:ytterligare\s+materialinformation"  # end option 1
-        r"|förklaring\s+av\s+materialen"         # end option 2
-        r"|skötselråd)"                           # end option 3  ← NEW
-    )
-
-    # 3) Find the match in normalized text to get positions
-    m = re.search(pattern, txt_normalized, flags=re.DOTALL)
-    
-    if m:
-        # Get the original text preserving formatting
-        original_text = html.unescape(text).replace('\xa0', ' ')
-        
-        # Find the same pattern in original text (case-insensitive)
-        original_pattern = (
-            r"välj\s+storlek"
-            r"\s*(.*?)\s*"
-            r"(?:ytterligare\s+materialinformation"
-            r"|förklaring\s+av\s+materialen"
-            r"|skötselråd)"
-        )
-        
-        original_match = re.search(original_pattern, original_text, flags=re.DOTALL | re.IGNORECASE)
-        
-        if original_match:
-            text = "välj storlek " + original_match.group(1).strip()
-        else:
-            text = "välj storlek " + m.group(1).strip()
-    else:
-        text = None
-    
-    
-    return text
 
 
 async def crawl_url(url, browser_config, run_config, client, max_retries=3):
@@ -107,7 +40,9 @@ async def crawl_url(url, browser_config, run_config, client, max_retries=3):
                         article_id = extract_product_id(url)
                         print(f"Extracted article ID: {article_id} from {url}")
 
-                        #url_image = extract_urls_from_markdown(result.markdown)
+                        url_image = extract_urls_from_markdown(result.markdown)
+                        if url_image:
+                            image_mapping[article_id] = url_image
                         extracted_content_cleaned = extract_sections_from_markdown_openai(extracted_content,article_id, client)
                     return extracted_content_cleaned
                     
@@ -183,6 +118,7 @@ async def main():
     #     destination_blob_name="garments-info/products-info.txt",
     #     project_id="voii-459718"
     # )
+    upload_image_mapping_to_gcs(image_mapping)
 
     elapsed = time.perf_counter() - start_time
     print(f"Execution time: {elapsed:.2f} seconds")

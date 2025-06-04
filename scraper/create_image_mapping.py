@@ -6,6 +6,8 @@ from crawl4ai import AsyncWebCrawler
 from crawl4ai.async_configs import BrowserConfig, CrawlerRunConfig
 from gcp.gcp_bucket import download_urls_from_gcs, upload_urls_to_gcs
 from product import extract_product_id, extract_urls_from_markdown
+from gcp.gcp_bucket import upload_image_mapping_to_gcs
+from transformation.hardcoded_re import extract_product_id, extract_urls_from_markdown
 
 # Load environment variables
 load_dotenv()
@@ -42,31 +44,13 @@ async def extract_image_url_from_page(url, browser_config, run_config, max_retri
 
 
 
-def upload_image_mapping_to_gcs(mapping_dict, bucket_name="web-scrape-ai", destination_blob_name="image_mapping.json", project_id="voii-459718"):
-    """Upload image mapping dictionary as JSON to GCP bucket."""
-    try:
-        from google.cloud import storage
-        storage_client = storage.Client(project=project_id)
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(destination_blob_name)
-        
-        # Convert dictionary to JSON string
-        mapping_json = json.dumps(mapping_dict, indent=2)
-        
-        # Upload as JSON content
-        blob.upload_from_string(mapping_json, content_type="application/json; charset=utf-8")
-        print(f"Uploaded image mapping with {len(mapping_dict)} entries to {bucket_name}/{destination_blob_name}")
-        return True
-    except Exception as e:
-        print(f"Error uploading image mapping to GCP: {str(e)}")
-        return False
-
 async def create_image_mapping():
     """Create mapping of article ID to image URL and upload to GCP."""
     
 
     # Download URLs from GCP bucket
-    garment_urls = download_urls_from_gcs()
+    garment_urls = download_urls_from_gcs()[:5]
+    
     print(f"Downloaded {len(garment_urls)} URLs from GCP bucket")
     
     # Setup crawler configs
@@ -103,9 +87,9 @@ async def create_image_mapping():
     
     # Upload to GCP bucket using the new function
     success = upload_image_mapping_to_gcs(image_mapping)
-    
+
     if not success:
-        # Save locally as backup
+        # Save locally as backup 
         with open("image_mapping_backup.json", "w") as f:
             json.dump(image_mapping, f, indent=2)
         print("Saved backup locally as image_mapping_backup.json")
