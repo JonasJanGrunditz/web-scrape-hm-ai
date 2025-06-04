@@ -84,6 +84,14 @@ def parse_garments_to_structured_format(garment_data):
             current_garment['color'] = item.replace('Color:', '').strip()
         elif item.startswith('Attributes:'):
             current_garment['attributes'] = item.replace('Attributes:', '').strip()
+        elif item.startswith('Discounted Price:'):
+            current_garment['discounted_price'] = item.replace('Discounted Price:', '').strip()
+        elif item.startswith('Original Price:'):
+            current_garment['original_price'] = item.replace('Original Price:', '').strip()
+        elif item.startswith('Discount Percentage:'):
+            current_garment['discount_percentage'] = item.replace('Discount Percentage:', '').strip()
+        elif item.startswith('Gender:'):
+            current_garment['gender'] = item.replace('Gender:', '').strip()
     
     # Don't forget the last garment if the list doesn't end with empty string
     if current_garment:
@@ -109,6 +117,10 @@ Description: {garment.get('description', 'N/A')}
 Material: {garment.get('material', 'N/A')}
 Sizes & Availability: {garment.get('sizes_availability', 'N/A')}
 Attributes: {garment.get('attributes', 'N/A')}
+Discounted Price: {garment.get('discounted_price', 'N/A')}
+Original Price: {garment.get('original_price', 'N/A')}
+Discount Percentage: {garment.get('discount_percentage', 'N/A')}
+Gender: {garment.get('gender', 'N/A')}
 === GARMENT ENTRY END ===
 """
         formatted_entries.append(entry.strip())
@@ -129,7 +141,7 @@ file_id = create_file(client, formatted_garment_data, filename="structured_garme
 
 
 vector_store = client.vector_stores.create(
-    name="structured_fashion_knowledge_base_v1",
+    name="structured_fashion_knowledge_base_v2",
 )
 print(vector_store.id)
 

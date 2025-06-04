@@ -24,7 +24,7 @@ def download_urls_from_gcs(bucket_name="web-scrape-ai", destination_blob_name="g
     return urls
 
 
-def download_processed_garments_from_gcs(bucket_name="web-scrape-ai", destination_blob_name="garments-info/products-info.txt", project_id="voii-459718"):
+def download_processed_garments_from_gcs(bucket_name="web-scrape-ai", destination_blob_name="garments-info/products-info_test.txt", project_id="voii-459718"):
     """Download processed garment data from a GCP bucket."""
     storage_client = storage.Client(project=project_id)
     bucket = storage_client.bucket(bucket_name)
