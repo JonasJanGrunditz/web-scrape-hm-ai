@@ -1,7 +1,8 @@
-Crawl4AI
+crawl4ai
 python-dotenv==1.0.1
 pydantic==2.10.6
 google-cloud-storage
 openai
 beautifulsoup4
 groq
+flask
