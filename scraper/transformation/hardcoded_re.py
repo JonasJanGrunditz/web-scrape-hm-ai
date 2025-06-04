@@ -70,3 +70,78 @@ def between_size_and_material(text: str) -> str | None:
     
     
     return text
+
+
+def extract_price_info(text):
+    """
+    Extract price information between 'Inte sparat i favoriter' and '## Färg:' sections.
+    
+    Returns:
+        tuple: (discounted_price, original_price, discount_percentage)
+        - If two prices: first is discounted, second is original
+        - If one price: it's the original price, discounted_price is None
+        - discount_percentage is "no discount" if only one price, otherwise percentage as string
+    """
+    # Pattern to find content between the two sections
+    pattern = r'Inte sparat i favoriter\s*(.*?)\s*(?:##\s*)?Färg:'
+    match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
+    
+    if not match:
+        return None, None, "no discount"
+    
+    content = match.group(1).strip()
+    
+    # Pattern to extract prices in Swedish format (XXX,XX kr)
+    price_pattern = r'(\d+,\d{2})\s*kr'
+    prices = re.findall(price_pattern, content)
+    
+    if len(prices) == 0:
+        return None, None, "no discount"
+    elif len(prices) == 1:
+        # Only one price - it's the original price
+        original_price = float(prices[0].replace(',', '.'))
+        return None, original_price, "no discount"
+    elif len(prices) >= 2:
+        # Two or more prices - first is discounted, second is original
+        discounted_price = float(prices[0].replace(',', '.'))
+        original_price = float(prices[1].replace(',', '.'))
+        
+        # Calculate discount percentage
+        discount_percentage = round(((original_price - discounted_price) / original_price) * 100)
+        
+        return discounted_price, original_price, f"{discount_percentage}%"
+    
+    return None, None, "no discount"
+
+
+def count_most_frequent_word(text):
+    """
+    Count occurrences of specific words in a string and return the most frequent one.
+    
+    Args:
+        text (str): The input string to analyze
+        
+    Returns:
+        tuple: (most_frequent_word, count) or (None, 0) if no words found
+    """
+    # Define the words to search for
+    target_words = ["DAM", "HERR", "BARN", "HOME", "BEAUTY"]
+    
+    # Convert text to uppercase for case-insensitive matching
+    text_upper = text.upper()
+    
+    # Count occurrences of each word
+    word_counts = {}
+    for word in target_words:
+        count = text_upper.count(word)
+        word_counts[word] = count
+    
+    # Find the word with maximum count
+    if not word_counts or all(count == 0 for count in word_counts.values()):
+        return None, 0
+    
+    most_frequent_word = max(word_counts, key=word_counts.get)
+    max_count = word_counts[most_frequent_word]
+    
+    return most_frequent_word
+

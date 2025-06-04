@@ -23,6 +23,7 @@ async def extract_image_url_from_page(url, browser_config, run_config, max_retri
                     print(f"Successfully crawled {url} on attempt {attempt + 1}")
                     try:
                         image_url = extract_urls_from_markdown(result.markdown)
+                        
                         return image_url
                     except (IndexError, AttributeError):
                         print(f"Warning: No image URL found in markdown for {url}")
@@ -49,7 +50,7 @@ async def create_image_mapping():
     
 
     # Download URLs from GCP bucket
-    garment_urls = download_urls_from_gcs()[:5]
+    garment_urls = download_urls_from_gcs()[:1]
     
     print(f"Downloaded {len(garment_urls)} URLs from GCP bucket")
     

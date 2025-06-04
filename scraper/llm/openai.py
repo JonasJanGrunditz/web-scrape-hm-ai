@@ -8,7 +8,7 @@ class ArticleSummary(BaseModel):
     color: str
     attributes: list[str]
 
-def extract_sections_from_markdown_openai(markdown_content: str, article_id: str, client) -> str:
+def extract_sections_from_markdown_openai(markdown_content: str, article_id: str, discounted_price: str, original_price: str, discount_percentage: str, gender: str, client) -> str:
     """
     Extracts text under the 'Beskrivning och passform' and "MATERIAL" sections from the provided markdown content.
     
@@ -49,4 +49,8 @@ def extract_sections_from_markdown_openai(markdown_content: str, article_id: str
     Category: {response.output_parsed.category}
     Color: {response.output_parsed.color}
     Attributes: {response.output_parsed.attributes}
+    Discounted Price: {discounted_price}
+    Original Price: {original_price}
+    Discount Percentage: {discount_percentage}
+    Gender: {gender}
     """
