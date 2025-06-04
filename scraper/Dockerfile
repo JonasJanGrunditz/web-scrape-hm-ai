@@ -1,0 +1,43 @@
+# Specify the target platform to ensure AMD64 compatibility for Cloud Run
+FROM --platform=linux/amd64 python:3.9-slim
+
+# Install system dependencies for Playwright
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    ca-certificates \
+    procps \
+    xvfb \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy requirements file
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# Install Playwright browsers and dependencies
+RUN playwright install chromium
+RUN playwright install-deps
+
+# Install additional dependencies for Playwright
+RUN apt-get update && apt-get install -y \
+    libwoff1 \
+    libgstreamer1.0-0 \
+    gstreamer1.0-gl \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    libharfbuzz-icu0 \
+    libenchant-2-2 \
+    libsecret-1-0 \
+    libhyphen0 \
+    libmanette-0.2-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# Copy your application code
+COPY . .
+
+# Run the main scraping script directly
+CMD ["python", "main.py"]

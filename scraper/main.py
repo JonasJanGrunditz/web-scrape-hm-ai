@@ -1,4 +1,5 @@
 import asyncio
+import os
 import re
 from crawl4ai import AsyncWebCrawler
 from crawl4ai.async_configs import BrowserConfig, CrawlerRunConfig
@@ -30,7 +31,10 @@ async def main():
         remove_overlay_elements=True,
     )
     all_urls = []
-    for index in range(1, 20):
+    start_page = int(os.getenv('START_PAGE', '1'))
+    end_page = int(os.getenv('END_PAGE', '3'))
+    
+    for index in range(start_page, end_page):
     # Run the crawl on the product page
         result = await crawl_products(
             f"https://www2.hm.com/sv_se/dam/produkter/se-alla.html?page={index}",
