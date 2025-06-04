@@ -6,3 +6,4 @@ openai
 beautifulsoup4
 groq
 flask
+gunicorn
