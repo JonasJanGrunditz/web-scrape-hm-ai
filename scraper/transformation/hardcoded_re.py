@@ -1,6 +1,8 @@
 import html
 import re
-def extract_urls_from_markdown(text: str) -> list[str]:
+from typing import List, Optional
+
+def extract_urls_from_markdown(text: str) -> List[str]:
     """
     Extract all H&M image URLs from markdown image syntax like:
     [![Alt text](https://image.hm.com/assets/hm/path/image.jpg)](https://example.com/page.html)
@@ -13,7 +15,7 @@ def extract_urls_from_markdown(text: str) -> list[str]:
    
     return clean_urls
 
-def extract_product_id(text: str) -> str | None:
+def extract_product_id(text: str) -> Optional[str]:
     """
     Extract product ID from H&M URLs like:
     https://www2.hm.com/sv_se/productpage.1259175004.html
@@ -23,7 +25,7 @@ def extract_product_id(text: str) -> str | None:
     match = re.search(pattern, text)
     return match.group(1) if match else None
 
-def between_size_and_material(text: str) -> str | None:
+def between_size_and_material(text: str) -> Optional[str]:
     """
     returns everything that sits between the headings
     "Välj storlek"  …  "Ytterligare materialinformation"

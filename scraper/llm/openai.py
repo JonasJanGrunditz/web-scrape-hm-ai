@@ -1,12 +1,14 @@
 from openai import OpenAI
 from pydantic import BaseModel
+from typing import List
+
 class ArticleSummary(BaseModel):
     sizes_and_availability: str
     beskrivning_och_passform: str
     material: str
     category: str
     color: str
-    attributes: list[str]
+    attributes: List[str]
 
 def extract_sections_from_markdown_openai(markdown_content: str, article_id: str, discounted_price: str, original_price: str, discount_percentage: str, gender: str, client) -> str:
     """
@@ -22,13 +24,13 @@ def extract_sections_from_markdown_openai(markdown_content: str, article_id: str
 
 
     response = client.responses.parse(
-    model="gpt-4o-mini",
+    model="gpt-4.1-mini",
     input=f""" Structure and clean the text so it is easy for the GenAI Agent to search for the data in a vector database
                 
                 Output structure:
-                'sizes_and_availability': 'Text',
+                'sizes_and_availability': 'Example: XXS Slutsåld, XS, S, M, L, XL, XXL, 3XL, 4XL OR A/B eller B/C eller C/D.'. Do bot include Välj storlek or Produkter finns tillgängliga online och i butik,
                 'beskrivning_och_passform': 'Text',
-                'material': 'Text',
+                'material': 'Example; Viskos 100%',
                 'category': 'the catefory of the garment, e.g. "klänningar"'
                 'color': 'the color of the garment, e.g. "svart" . Often exist below Beskrivning'
                 'attributes': ['list', 'of', 'attributes', 'e.g. "kortärmad", "långärmad", "v-ringad", "mönstrad"', Passform, Midjehöjd, Längd,Krage, Halsringning, Ärmstil, Ärmlängd and more...]
