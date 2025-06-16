@@ -8,3 +8,4 @@ groq
 flask
 gunicorn
 aiohttp
+elasticsearch
