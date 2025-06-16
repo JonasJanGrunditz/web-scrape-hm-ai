@@ -130,8 +130,13 @@ Gender: {garment.get('gender', 'N/A')}
 # Download and process the garment data
 raw_garment_data = download_processed_garments_from_gcs()
 
-# Parse into structured format
+# # Parse into structured format
 structured_garments = parse_garments_to_structured_format(raw_garment_data)
+print(f"Parsed {len(structured_garments)} garments")
+unique_garments_dict = {garment.get('article_id'): garment for garment in structured_garments if garment.get('article_id')}
+structured_garments = list(unique_garments_dict.values())
+print(f"Unique garments after deduplication: {len(structured_garments)}")
+print(structured_garments[:2])  # Print the first garment for verification
 print(f"Parsed {len(structured_garments)} garments")
 
 # Format for vector store with clear delimiters
